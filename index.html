@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeAnn Tai</title>
+<meta name="description" content="LeAnn Tai. I build with AI, and I teach other people to build with it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+  :root {
+    color-scheme: light;
+
+    --bg:        #f5f6f7;
+    --ink:       #14171c;
+    --ink-soft:  #545b66;
+    --ink-faint: #8a919c;
+    --rule:      #dfe3e7;
+    --rule-firm: #c3c9d1;
+
+    /* four shades of blue, one per chapter */
+    --c1: #4338ca;
+    --c2: #1d4ed8;
+    --c3: #0369a1;
+    --c4: #0e7490;
+    --c: var(--c2);
+
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --ease: cubic-bezier(0.16, 0.84, 0.24, 1);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; overflow-x: hidden; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; }
+
+  /* Chapters sit in a left column so the wheel owns the right side. */
+  .page {
+    max-width: 60rem;
+    margin: 0;
+    padding: 0 2rem 0 max(2rem, 6vw);
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ---------- reveal ---------- */
+
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(2rem) rotateX(10deg);
+    transform-origin: 50% 100%;
+    transition:
+      opacity 0.7s var(--ease),
+      transform 0.7s var(--ease);
+    transition-delay: var(--d, 0ms);
+  }
+
+  .js .reveal.in { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* ---------- the wheel ---------- */
+
+  /* Stage clips the oversized wheel so it bleeds off the edges
+     without ever creating a scrollbar. */
+  .wheel-stage {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .wheel { position: absolute; opacity: 0; }
+  .wheel svg { width: 100%; height: 100%; display: block; overflow: visible; }
+
+  .seg {
+    fill: none;
+    stroke-width: 4;
+    opacity: 0.32;
+    cursor: pointer;
+    pointer-events: stroke;
+    transition: opacity 0.45s ease;
+  }
+
+  .s1 { stroke: var(--c1); }
+  .s2 { stroke: var(--c2); }
+  .s3 { stroke: var(--c3); }
+  .s4 { stroke: var(--c4); }
+
+  .seg:hover { opacity: 0.65; }
+  .seg.on { opacity: 1; }
+  .seg:focus-visible { outline: none; opacity: 1; }
+
+  .wlabel {
+    font-family: var(--sans);
+    font-size: 4.6px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    opacity: 0.4;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: opacity 0.45s ease;
+  }
+
+  .l1 { fill: var(--c1); }
+  .l2 { fill: var(--c2); }
+  .l3 { fill: var(--c3); }
+  .l4 { fill: var(--c4); }
+
+  .wlabel.on { opacity: 1; }
+  .wlabel:hover { opacity: 0.8; }
+
+  .marker { stroke: var(--ink); stroke-width: 0.8; }
+
+  /* ---------- hero ---------- */
+
+  .hero {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 6rem 2rem 6rem max(2rem, 6vw);
+  }
+
+  .name {
+    font-weight: 700;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin: 0;
+  }
+
+  .tagline {
+    font-size: clamp(1rem, 1.8vw, 1.1875rem);
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 38ch;
+    margin: 1.5rem 0 0;
+  }
+
+  .meta {
+    margin-top: 2.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    font-size: 0.9375rem;
+  }
+
+  .meta a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-firm);
+    padding-bottom: 2px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .meta a:hover { color: var(--c2); border-color: var(--c2); }
+
+  /* ---------- chapters ---------- */
+
+  .chapter {
+    display: grid;
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: 2.5rem;
+    padding: 6rem 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .chapter[data-accent="1"] { --c: var(--c1); }
+  .chapter[data-accent="2"] { --c: var(--c2); }
+  .chapter[data-accent="3"] { --c: var(--c3); }
+  .chapter[data-accent="4"] { --c: var(--c4); }
+
+  .chapter-head { position: sticky; top: 8rem; align-self: start; }
+
+  .chapter-num {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    color: var(--c);
+    margin: 0 0 0.5rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .chapter-title {
+    font-weight: 700;
+    font-size: 1.375rem;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .chapter-thesis {
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0.875rem 0 0;
+    max-width: 26ch;
+  }
+
+  /* ---------- entries: a ruled index, not cards ---------- */
+
+  .entries { perspective: 1200px; }
+
+  .entry {
+    display: block;
+    text-decoration: none;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .entries .entry:first-child { border-top: none; padding-top: 0; }
+  .entries .entry:last-child { border-bottom: 1px solid var(--rule); }
+
+  .entry-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 2rem;
+  }
+
+  .entry-title {
+    font-weight: 600;
+    font-size: 1.0625rem;
+    letter-spacing: -0.01em;
+    margin: 0;
+    transition: color 0.2s ease;
+  }
+
+  a.entry:hover .entry-title { color: var(--c); }
+
+  .entry-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    white-space: nowrap;
+    flex: none;
+  }
+
+  .kind {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c);
+  }
+
+  .when {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .entry-role {
+    font-size: 0.875rem;
+    color: var(--ink-soft);
+    margin: 0.1875rem 0 0;
+  }
+
+  .entry-desc {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0.75rem 0 0;
+    max-width: 64ch;
+  }
+
+  .entry-link {
+    display: inline-block;
+    font-size: 0.8125rem;
+    color: var(--ink-faint);
+    margin-top: 0.875rem;
+    transition: color 0.2s ease;
+  }
+
+  a.entry:hover .entry-link { color: var(--c); }
+
+  .details { list-style: none; padding: 0; margin: 0.875rem 0 0; max-width: 64ch; }
+
+  .details li {
+    position: relative;
+    padding-left: 1.125rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-top: 0.3125rem;
+  }
+
+  .details li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 7px;
+    height: 1px;
+    background: var(--c);
+  }
+
+  /* ---------- examples nested under an entry ---------- */
+
+  .examples {
+    margin-top: 1.5rem;
+    padding-left: 1.125rem;
+    border-left: 2px solid var(--rule);
+  }
+
+  .examples-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 0.5rem;
+  }
+
+  .example {
+    display: flex;
+    align-items: baseline;
+    gap: 0.875rem;
+    padding: 0.5rem 0;
+    text-decoration: none;
+    font-size: 0.875rem;
+    color: var(--ink-soft);
+    transition: color 0.2s ease;
+  }
+
+  .example:hover { color: var(--c); }
+
+  .example-kind {
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    width: 5.5rem;
+    flex: none;
+  }
+
+  .example:hover .example-kind { color: var(--c); }
+  .example-name { flex: 1; }
+  .example-go { color: var(--ink-faint); flex: none; }
+  .example:hover .example-go { color: var(--c); }
+
+  /* ---------- closing ---------- */
+
+  .closing {
+    padding: 6rem 0 3rem;
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+
+  .closing-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c4);
+    margin: 0;
+  }
+
+  .closing-body p { margin: 0; }
+
+  .edu-school { font-weight: 600; }
+  .edu-degree { color: var(--ink-soft); margin-top: 0.375rem !important; font-size: 0.9375rem; }
+
+  .contact {
+    margin-top: 2.5rem !important;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    font-size: 0.9375rem;
+  }
+
+  .contact a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-firm);
+    padding-bottom: 2px;
+  }
+
+  .contact a:hover { color: var(--c2); border-color: var(--c2); }
+
+  footer {
+    padding: 2rem 0 3rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- narrow ---------- */
+
+  @media (max-width: 56rem) {
+    .page { max-width: 100%; margin: 0 auto; padding: 0 1.5rem; }
+    .hero { padding: 6rem 1.5rem 4rem; }
+    .chapter, .closing { grid-template-columns: 1fr; gap: 1.75rem; padding: 4.5rem 0; }
+    .chapter-head { position: static; }
+    .chapter-thesis { max-width: 44ch; }
+    .wlabel { display: none; }
+  }
+
+  @media (max-width: 36rem) {
+    .page { padding: 0 1.25rem; }
+    .hero { padding: 5rem 1.25rem 3.5rem; }
+    .chapter, .closing { padding: 3.5rem 0; }
+    .entry-head { flex-direction: column; gap: 0.375rem; }
+    .entry-meta { gap: 0.625rem; }
+    .example { flex-wrap: wrap; gap: 0.25rem 0.875rem; }
+    .example-kind { width: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wheel-stage">
+  <div class="wheel" id="wheel">
+    <svg viewBox="0 0 200 200" aria-label="Chapter navigation">
+      <g id="ring">
+        <path class="seg s1" data-i="0" d="M104.08 22.11 A78 78 0 0 1 177.89 95.92" role="button" tabindex="0" aria-label="Go to Build"></path>
+        <path class="seg s2" data-i="1" d="M177.89 104.08 A78 78 0 0 1 104.08 177.89" role="button" tabindex="0" aria-label="Go to Deploy"></path>
+        <path class="seg s3" data-i="2" d="M95.92 177.89 A78 78 0 0 1 22.11 104.08" role="button" tabindex="0" aria-label="Go to Teach"></path>
+        <path class="seg s4" data-i="3" d="M22.11 95.92 A78 78 0 0 1 95.92 22.11" role="button" tabindex="0" aria-label="Go to Enable"></path>
+
+        <text class="wlabel l1" data-i="0" x="141" y="59" transform="rotate(135 141 59)">BUILD</text>
+        <text class="wlabel l2" data-i="1" x="141" y="141" transform="rotate(225 141 141)">DEPLOY</text>
+        <text class="wlabel l3" data-i="2" x="59" y="141" transform="rotate(315 59 141)">TEACH</text>
+        <text class="wlabel l4" data-i="3" x="59" y="59" transform="rotate(45 59 59)">ENABLE</text>
+      </g>
+      <line class="marker" id="marker" x1="6" y1="100" x2="17" y2="100"></line>
+    </svg>
+  </div>
+</div>
+
+<header class="hero">
+  <h1 class="name reveal">LeAnn Tai</h1>
+  <p class="tagline reveal">I build with AI, and I teach other people to build with it.</p>
+  <div class="meta reveal">
+    <a href="mailto:leanntai@mit.edu">leanntai@mit.edu</a>
+    <a href="https://www.linkedin.com/in/leanntai" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://github.com/taipioca" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</header>
+
+<div class="page">
+
+  <section class="chapter" id="c0" data-accent="1">
+    <div class="chapter-head">
+      <p class="chapter-num reveal">01</p>
+      <h2 class="chapter-title reveal">Build</h2>
+      <p class="chapter-thesis reveal">Start by making the thing work.</p>
+    </div>
+    <div class="entries">
+
+      <article class="entry reveal">
+        <div class="entry-head">
+          <h3 class="entry-title">NASA Jet Propulsion Laboratory</h3>
+          <div class="entry-meta"><span class="kind">Role</span><span class="when">2025</span></div>
+        </div>
+        <p class="entry-role">AI &amp; Data Analytics Intern</p>
+        <p class="entry-desc">An LLM dashboard and chatbot that streamlined proposal review.</p>
+      </article>
+
+      <article class="entry reveal">
+        <div class="entry-head">
+          <h3 class="entry-title">E.Sun Financial Holding</h3>
+          <div class="entry-meta"><span class="kind">Role</span><span class="when">2024</span></div>
+        </div>
+        <p class="entry-role">Applied AI Intern</p>
+        <p class="entry-desc">ML models and a servicing dashboard adopted by 300+ employees.</p>
+      </article>
+
+      <article class="entry reveal">
+        <div class="entry-head">
+          <h3 class="entry-title">SneakIn</h3>
+          <div class="entry-meta"><span class="kind">Project</span><span class="when">2024</span></div>
+        </div>
+        <p class="entry-role">Price forecasting</p>
+        <p class="entry-desc">Resale price projections built on BERT and NLP.</p>
+      </article>
+
+      <article class="entry reveal">
+        <div class="entry-head">
+          <h3 class="entry-title">PrivyProbe</h3>
+          <div class="entry-meta"><span class="kind">Project</span><span class="when">2024</span></div>
+        </div>
+        <p class="entry-role">2nd place, hackathon</p>
+        <p class="entry-desc">A dashboard for community-level internet tracking data.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="chapter" id="c1" data-accent="2">
+    <div class="chapter-head">
+      <p class="chapter-num reveal">02</p>
+      <h2 class="chapter-title reveal">Deploy</h2>
+      <p class="chapter-thesis reveal">Then put it in front of the people who use it.</p>
+    </div>
+    <div class="entries">
+
+      <article class="entry reveal">
+        <div class="entry-head">
+          <h3 class="entry-title">BlackRock</h3>
+          <div class="entry-meta"><span class="kind">Role</span><span class="when">2026</span></div>
+        </div>
+        <p class="entry-role">Forward Deployed Solutions Architect</p>
+        <p class="entry-desc">Delivered a portfolio risk platform with enterprise clients, and built an AI assistant for the delivery team.</p>
+      </article>
+
+      <article class="entry reveal">
+        <div class="entry-head">
+          <h3 class="entry-title">MIT Digital Currency Initiative</h3>
+          <div class="entry-meta"><span class="kind">Role</span><span class="when">2024 to now</span></div>
+        </div>
+        <p class="entry-role">Markets &amp; Technology Researcher</p>
+        <p class="entry-desc">An API built with the U.S. Treasury, refined over 50+ demos a year.</p>
+      </article>
+
+      <article class="entry reveal">
+        <div class="entry-head">
+          <h3 class="entry-title">Code for Good</h3>
+          <div class="entry-meta"><span class="kind">Role</span><span class="when">2023 to 2024</span></div>
+        </div>
+        <p class="entry-role">Lead Tech Consultant</p>
+        <p class="entry-desc">Led a team delivering a geospatial tool that now supports 2,000+ youth.</p>
+      </article>
+
+      <article class="entry reveal">
+        <div class="entry-head">
+          <h3 class="entry-title">Sharedom</h3>
+          <div class="entry-meta"><span class="kind">Project</span><span class="when">2024</span></div>
+        </div>
+        <p class="entry-role">4th of 450+</p>
+        <p class="entry-desc">A peer-to-peer sharing platform, demoed live to 50+ users.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="chapter" id="c2" data-accent="3">
+    <div class="chapter-head">
+      <p class="chapter-num reveal">03</p>
+      <h2 class="chapter-title reveal">Teach</h2>
+      <p class="chapter-thesis reveal">Explaining it clearly is part of the work.</p>
+    </div>
+    <div class="entries">
+
+      <a class="entry reveal" href="https://uat.mit.edu/" target="_blank" rel="noopener">
+        <div class="entry-head">
+          <h3 class="entry-title">6.UAT Oral Communication</h3>
+          <div class="entry-meta"><span class="kind">Teaching</span><span class="when">2026 to now</span></div>
+        </div>
+        <p class="entry-role">Massachusetts Institute of Technology</p>
+        <p class="entry-desc">Teach 30+ students to present technical work to non-technical audiences.</p>
+        <ul class="details">
+          <li>Lead weekly recitations and office hours</li>
+          <li>Write instructional material on structure, audience adaptation, and technical storytelling</li>
+          <li>Evaluate every student presentation and give individual feedback</li>
+        </ul>
+        <span class="entry-link">Course site</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="chapter" id="c3" data-accent="4">
+    <div class="chapter-head">
+      <p class="chapter-num reveal">04</p>
+      <h2 class="chapter-title reveal">Enable</h2>
+      <p class="chapter-thesis reveal">Then get everyone else building.</p>
+    </div>
+    <div class="entries">
+
+      <article class="entry reveal">
+        <div class="entry-head">
+          <h3 class="entry-title">Anthropic</h3>
+          <div class="entry-meta"><span class="kind">Role</span><span class="when">Aug 2025 to Jan 2026</span></div>
+        </div>
+        <p class="entry-role">Claude Campus Ambassador</p>
+        <p class="entry-desc">Owned adoption of Claude across campus. I designed the programs, wrote the materials, taught the sessions, and built the community that came out of them.</p>
+        <ul class="details">
+          <li>Scaled the Claude Builder Club to 100+ active members</li>
+          <li>Designed and iterated a program of mini-demos, study sessions, workshops, and build-athons</li>
+          <li>Wrote the teaching materials I taught from, covering Claude Code and the Claude API</li>
+          <li>Partnered with academic departments and student organizations to co-develop sessions</li>
+          <li>Put Pro accounts and API credits directly into builders' hands</li>
+        </ul>
+        <div class="examples">
+          <p class="examples-label">A few of them</p>
+          <a class="example" href="https://drive.google.com/file/d/1W-WXA-UR8QuQraKoOn2ltow97L2LcjGI/view?usp=sharing" target="_blank" rel="noopener">
+            <span class="example-kind">Material</span>
+            <span class="example-name">Claude mini-demo deck, written and taught by me</span>
+            <span class="example-go">↗</span>
+          </a>
+          <a class="example" href="https://www.linkedin.com/posts/leanntai_claudepartner-claudeambassador-share-7377963378633232384-WjPK/" target="_blank" rel="noopener">
+            <span class="example-kind">Demo</span>
+            <span class="example-name">Hands on session with AppDev@MIT</span>
+            <span class="example-go">↗</span>
+          </a>
+          <a class="example" href="https://www.linkedin.com/posts/leanntai_thank-you-sundai-for-having-us-ugcPost-7393510279667613696-xhvc/" target="_blank" rel="noopener">
+            <span class="example-kind">Demo</span>
+            <span class="example-name">Claude Code with the Sundai Club hackathon team</span>
+            <span class="example-go">↗</span>
+          </a>
+          <a class="example" href="https://www.linkedin.com/posts/leanntai_claudepartner-claudeambassador-share-7375198778871672832-0UBm/" target="_blank" rel="noopener">
+            <span class="example-kind">Community</span>
+            <span class="example-name">Launching the Builder Club after HackMIT</span>
+            <span class="example-go">↗</span>
+          </a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="closing">
+    <p class="closing-label reveal">Education</p>
+    <div class="closing-body">
+      <p class="edu-school reveal">Massachusetts Institute of Technology</p>
+      <p class="edu-degree reveal">B.S. in Computer Science and Engineering</p>
+      <p class="edu-degree reveal">M.Eng. in Computer Science and Engineering</p>
+      <div class="contact reveal">
+        <a href="mailto:leanntai@mit.edu">leanntai@mit.edu</a>
+        <a href="https://www.linkedin.com/in/leanntai" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/taipioca" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>LeAnn Tai</footer>
+
+</div>
+
+<script>
+(function () {
+  var NAMES = ['Build', 'Deploy', 'Teach', 'Enable'];
+  var chapters = NAMES.map(function (_, i) { return document.getElementById('c' + i); });
+  var wheel = document.getElementById('wheel');
+  var ring = document.getElementById('ring');
+  var segs = Array.prototype.slice.call(document.querySelectorAll('.seg'));
+  var labels = Array.prototype.slice.call(document.querySelectorAll('.wlabel'));
+  var hero = document.querySelector('.hero');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* --- reveal on scroll, staggered against siblings --- */
+  var items = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+  var seen = new Map();
+  items.forEach(function (el) {
+    var i = seen.get(el.parentNode) || 0;
+    el.style.setProperty('--d', (i * 80) + 'ms');
+    seen.set(el.parentNode, i + 1);
+  });
+
+  if (reduced || !('IntersectionObserver' in window)) {
+    items.forEach(function (el) { el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.1 });
+    items.forEach(function (el) { io.observe(el); });
+
+    /* Anything on the first screen reveals regardless. The hero is bottom
+       aligned, so its last row sits on the observer's shrunken edge and
+       would otherwise never cross the threshold. */
+    requestAnimationFrame(function () {
+      items.forEach(function (el) {
+        if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+      });
+    });
+  }
+
+  var clamp = function (v, lo, hi) { return Math.min(hi, Math.max(lo, v)); };
+  var active = -1;
+  var ticking = false;
+
+  /* Chapters differ a lot in height, so progress has to come from each
+     chapter's real geometry. Splitting total scroll into four equal
+     quarters drifts out of sync with the sections.
+
+     Measured against the viewport rather than offsetTop: .page is
+     positioned, so it is the offsetParent and offsetTop would leave out
+     the full-height hero, shifting every chapter by one screen. */
+  function locate() {
+    var probe = window.innerHeight * 0.42;
+    for (var n = 0; n < chapters.length; n++) {
+      var r = chapters[n].getBoundingClientRect();
+      if (probe < r.top) return { i: n, frac: 0 };
+      if (probe < r.top + r.height) return { i: n, frac: (probe - r.top) / r.height };
+    }
+    return { i: chapters.length - 1, frac: 1 };
+  }
+
+  function draw() {
+    ticking = false;
+
+    var vh = window.innerHeight;
+    var vw = window.innerWidth;
+    var narrow = vw < 900;
+
+    /* The wheel is absent on the landing screen and eases in as you
+       leave it. It never resizes, only fades and slides into place. */
+    var D = vh * (narrow ? 1.15 : 1.55);
+    var t = clamp(window.scrollY / Math.max(1, hero.offsetHeight * 0.65), 0, 1);
+    var e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+    var park = vw + D * (narrow ? 0.38 : 0.13);
+    var cx = park + (1 - e) * D * 0.06;
+
+    wheel.style.width = D + 'px';
+    wheel.style.height = D + 'px';
+    wheel.style.left = (cx - D / 2) + 'px';
+    wheel.style.top = (vh / 2 - D / 2) + 'px';
+    wheel.style.opacity = e;
+
+    var at = locate();
+    var p = (at.i + at.frac) / chapters.length;
+
+    /* 270deg puts the active arc at the 9 o'clock marker, facing the text. */
+    ring.setAttribute('transform', 'rotate(' + (270 - p * 360) + ' 100 100)');
+
+    if (at.i !== active) {
+      active = at.i;
+      segs.forEach(function (s, n) { s.classList.toggle('on', n === at.i); });
+      labels.forEach(function (l, n) { l.classList.toggle('on', n === at.i); });
+    }
+  }
+
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(draw); }
+  }, { passive: true });
+  window.addEventListener('resize', draw, { passive: true });
+
+  /* --- click or key an arc or label to jump --- */
+  function jump(i) {
+    chapters[i].scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  }
+
+  segs.concat(labels).forEach(function (el) {
+    var i = parseInt(el.getAttribute('data-i'), 10);
+    el.addEventListener('click', function () { jump(i); });
+    el.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); jump(i); }
+    });
+  });
+
+  draw();
+})();
+</script>
+
+</body>
+</html>

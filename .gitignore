@@ -1,0 +1,10 @@
+# Tailored resume PDFs stay local. Delete this line to publish them.
+resumes/
+
+# Local agent config
+.claude/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+desktop.ini
